@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:dividedlist="dividedlist.*" xmlns:selectletterbar="selectLetterBar.*"
+               creationComplete="onInit()" frameRate="60">
+
+    <fx:Script><![CDATA[
+        import dividedlist.ListData;
+
+        import mx.collections.ArrayCollection;
+        import mx.events.ItemClickEvent;
+
+        private const sourceAC : ArrayCollection = new ArrayCollection();
+        private static const LETTERS : Array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+            "M", "N"];
+
+        private function onInit() : void
+        {
+            var ltr : int = 0;
+            var arr : Array = [];
+            var data : ListData;
+            for (var i : int = 0; i < 80; i++)
+            {
+                data = new ListData();
+                if (i % 6 == 0)
+                {
+                    data.isDivider = true;
+                    ltr++;
+                }
+                data.data = {name: LETTERS[ltr-1] + " element " + i};
+                arr.push(data);
+            }
+            sourceAC.source = arr;
+            sourceAC.refresh();
+            list.dataProvider = sourceAC;
+        }
+
+        private function selectletterbar1_itemClickHandler(e : ItemClickEvent) : void
+        {
+            var le : String = SelectLetterBar.LETTERS[e.index];
+            var sArr : Array = sourceAC.source;
+            var jumpIndex : int = -1;
+            for (var i : int = 0; i < sArr.length; i++)
+            {
+                if (sArr[i].isDivider == true && String(ListData(sArr[i]).data.name).charAt(0) == le)
+                {
+                    jumpIndex = i;
+                    break;
+                }
+            }
+            if (jumpIndex == -1)
+            {
+                jumpIndex = i;
+            }
+            list.scrollIndexToTop(jumpIndex + 1);
+        }
+
+        ]]></fx:Script>
+
+
+    <dividedlist:DividedList width="100%" height="100%" useVirtualLayout="true" id="list"
+                             skinClass="dividedlist.skins.DividedListSkin"
+                             itemRenderer="dividedlist.DListRenderer"/>
+
+    <selectletterbar:SelectLetterBar height="100%" right="5"
+                                     itemClick="selectletterbar1_itemClickHandler(event)"/>
+
+</s:Application>
